@@ -1,0 +1,34 @@
+version: "3.1"
+
+rules:
+
+- rule: Greet the user
+  steps:
+    - intent: greet
+    - action: utter_greet
+
+- rule: Say goodbye
+  steps:
+    - intent: say_goodbye
+    - action: utter_goodbye
+
+- rule: Show menu
+  steps:
+    - intent: ask_menu
+    - action: action_display_menu
+
+- rule: Check opening hours
+  steps:
+    - intent: check_opening_hours
+    - action: action_get_opening_hours
+
+- rule: Check opening hours for a specific day
+  steps:
+    - intent: check_opening_hours_days
+    - action: action_get_opening_hours
+
+- rule: Confirm order
+  steps:
+    - intent: order_food
+    - action: action_place_order
+    - action: utter_order_confirmation
