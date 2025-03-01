@@ -1,67 +1,90 @@
-const AIR = "minecraft:air";
-const STONE = "minecraft:stone";
-const WOOD = "minecraft:oak_planks";
-const GLASS = "minecraft:glass";
-const WATER = "minecraft:water";
-const TORCH = "minecraft:torch";
+player.onChat("run", function () {
+    // Podstawa zamku
+    blocks.fill(
+        Block.StoneBricks,
+        pos(3, -1, 0),
+        pos(15, -1, 12),
+        FillOperation.Replace
+    );
 
-function createCastle(origin) {
-    const { x, y, z } = origin;
+    // Budowanie wież
+    build_tower(3, 0);
+    build_tower(11, 0);
 
-    const width = 20;
-    const depth = 20;
-    const height = 10;
-    const moatWidth = 4;
+    // Budowanie murów zamku
+    build_wall(3, 2, 15, 2, "horizontal");
+    build_wall(3, 10, 15, 10, "horizontal");
+    build_wall(3, 2, 3, 10, "vertical");
+    build_wall(15, 2, 15, 10, "vertical");
 
-    function setBlock(x, y, z, block) {
-        console.log(`Set block ${block} at (${x}, ${y}, ${z})`);
-    }
+    // Dodanie okien
+    add_windows_to_wall(3, 2, 15, 2, "horizontal");
+    add_windows_to_wall(3, 10, 15, 10, "horizontal");
 
-    function fillArea(x1, y1, z1, x2, y2, z2, block) {
-        for (let i = x1; i <= x2; i++) {
-            for (let j = y1; j <= y2; j++) {
-                for (let k = z1; k <= z2; k++) {
-                    setBlock(i, j, k, block);
-                }
-            }
-        }
-    }
+    // Brama
+    build_gate(8, 2);
 
-    // moat
-    fillArea(x - moatWidth, y, z - moatWidth, x + width + moatWidth, y - 1, z + depth + moatWidth, WATER);
+    // Fosa i most
+    build_moat(2, 1, 16, 11, 2);
+    build_bridge(8, -1);
+});
 
-    // castle walls
-    fillArea(x, y, z, x + width, y + height, z, STONE); // front wall
-    fillArea(x, y, z + depth, x + width, y + height, z + depth, STONE); // back wall
-    fillArea(x, y, z, x, y + height, z + depth, STONE); // left wall
-    fillArea(x + width, y, z, x + width, y + height, z + depth, STONE); // right wall
-
-    // towers
-    fillArea(x, y, z, x + 3, y + height + 3, z + 3, STONE); // front-left tower
-    fillArea(x + width - 3, y, z, x + width, y + height + 3, z + 3, STONE); // front-right tower
-    fillArea(x, y, z + depth - 3, x + 3, y + height + 3, z + depth, STONE); // back-left tower
-    fillArea(x + width - 3, y, z + depth - 3, x + width, y + height + 3, z + depth, STONE); // back-right tower
-
-    fillArea(x, y + 5, z, x + width, y + 5, z + depth, WOOD); // first floor
-    fillArea(x, y + height, z, x + width, y + height, z + depth, WOOD); // second floor
-
-    // windows
-    fillArea(x + 5, y + 2, z, x + 6, y + 3, z, GLASS); // front wall window
-    fillArea(x + width - 6, y + 2, z, x + width - 5, y + 3, z, GLASS); // front wall window
-    fillArea(x + 5, y + 2, z + depth, x + 6, y + 3, z + depth, GLASS); // back wall window
-    fillArea(x + width - 6, y + 2, z + depth, x + width - 5, y + 3, z + depth, GLASS); // back wall window
-
-    // gate and bridge
-    fillArea(x + width / 2 - 1, y + 1, z, x + width / 2 + 1, y + 3, z, AIR); // gate
-    fillArea(x + width / 2 - 2, y, z - moatWidth, x + width / 2 + 2, y, z, WOOD); // bridge
-
-    // torches for lighting
-    setBlock(x + 1, y + height + 1, z + 1, TORCH); // front-left tower torch
-    setBlock(x + width - 1, y + height + 1, z + 1, TORCH); // front-right tower torch
-    setBlock(x + 1, y + height + 1, z + depth - 1, TORCH); // back-left tower torch
-    setBlock(x + width - 1, y + height + 1, z + depth - 1, TORCH); // back-right tower torch
-
-    console.log("Castle created successfully!");
+function build_tower(x: number, z: number) {
+    blocks.fill(
+        Block.Cobblestone,
+        pos(x, 0, z),
+        pos(x + 2, 6, z + 2),
+        FillOperation.Hollow
+    );
 }
 
-createCastle({ x: 0, y: 64, z: 0 });
+function build_wall(x1: number, z1: number, x2: number, z2: number, orientation: string) {
+    for (let y = 0; y <= 5; y++) {
+        blocks.fill(
+            Block.StoneBricks,
+            pos(x1, y, z1),
+            pos(x2, y, z2),
+            FillOperation.Replace
+        );
+    }
+}
+
+function add_windows_to_wall(x1: number, z1: number, x2: number, z2: number, orientation: string) {
+    let windowHeight = 3;
+    if (orientation === "horizontal") {
+        for (let x = x1 + 2; x < x2; x += 4) {
+            blocks.place(Block.Glass, pos(x, windowHeight, z1));
+        }
+    }
+}
+
+function build_gate(x: number, z: number) {
+    for (let y = 0; y <= 3; y++) {
+        blocks.place(Block.PlanksOak, pos(x, y, z));
+        blocks.place(Block.PlanksOak, pos(x + 2, y, z));
+    }
+    blocks.fill(
+        Block.OakFence,
+        pos(x + 1, 1, z),
+        pos(x + 1, 2, z),
+        FillOperation.Replace
+    );
+}
+
+function build_moat(x1: number, z1: number, x2: number, z2: number, width: number) {
+    blocks.fill(
+        Block.Water,
+        pos(x1 - width, -2, z1 - width),
+        pos(x2 + width, -1, z2 + width),
+        FillOperation.Replace
+    );
+}
+
+function build_bridge(x: number, z: number) {
+    blocks.fill(
+        Block.PlanksOak,
+        pos(x, 0, z),
+        pos(x + 2, 0, z + 4),
+        FillOperation.Replace
+    );
+}
