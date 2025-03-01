@@ -1,0 +1,85 @@
+version: "3.1"
+
+intents:
+  - greet
+  - affirm
+  - deny
+  - mood_great
+  - mood_unhappy
+  - ask_open_hours
+  - ask_restaurant_menu
+  - start_order
+  - your_order
+  - say_goodbye
+  - ask_menu
+  - check_opening_hours
+  - check_opening_hours_days
+  - order_food
+
+entities:
+  - days_of_the_week
+  - hour
+  - meal
+
+actions:
+  - utter_greet
+  - utter_goodbye
+  
+  - action_open_hours
+  - action_restaurant_menu
+  - action_receive_order
+  - action_show_order
+  - action_order_delivery
+  - action_display_menu
+  - action_get_opening_hours
+  - action_place_order
+
+slots:
+  days_of_the_week:
+    type: text
+    mappings:
+      - type: from_entity
+        entity: days_of_the_week
+  hour:
+    type: text
+    mappings:
+      - type: from_entity
+        entity: hour
+  meal:
+    type: text
+    mappings:
+      - type: from_entity
+        entity: meal  
+
+responses:
+  utter_cheer_up:
+    - text: "Here is something to cheer you up:"
+      image: "https://i.imgur.com/nGF1K8f.jpg"
+
+  utter_did_that_help:
+  - text: "Did that help you?"
+
+  utter_happy:
+  - text: "Great, carry on!"
+  
+  utter_greet:
+    - text: "Hello, what you need ?"
+    - text: "Welcome! How may i help you ?"
+    - text: "Hello! How can I help you ?"
+
+  utter_goodbye:
+    - text: "Goodbye"
+    - text: "Thank you for choosing us. Waiting for your next visit"
+    - text: "Goodbye and come back again"
+
+  utter_ask_order:
+  - text: "What would you like to eat?"
+  - text: "What would you need?"
+  - text: "What do you want to eat?"
+
+  utter_order_confirmation:
+  - text: "Do you want to confirm your order?"
+
+session_config:
+  session_expiration_time: 60
+  carry_over_slots_to_new_session: true
